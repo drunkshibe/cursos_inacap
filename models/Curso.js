@@ -18,6 +18,10 @@ const LeccionSchema = new mongoose.Schema({
   urlAudio: String,
   urlArchivo: String,
   duracion: Number, // en minutos
+  requiereVideo: {
+    type: Boolean,
+    default: true
+  },
   orden: {
     type: Number,
     required: true
@@ -37,6 +41,10 @@ const SeccionSchema = new mongoose.Schema({
   orden: {
     type: Number,
     required: true
+  },
+  requiereVideo: {
+    type: Boolean,
+    default: true
   },
   lecciones: [LeccionSchema],
   tieneExamen: {
@@ -106,6 +114,14 @@ const CursoSchema = new mongoose.Schema({
   estudiantesInscritos: {
     type: Number,
     default: 0
+  },
+  fechaPublicacion: {
+    type: Date,
+    default: Date.now
+  },
+  fechaCierre: {
+    type: Date,
+    default: null
   },
   fechaCreacion: {
     type: Date,

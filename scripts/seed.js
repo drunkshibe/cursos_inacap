@@ -469,6 +469,7 @@ async function seedDatabase() {
       const secciones = Array.isArray(curso.secciones) ? curso.secciones : [];
 
       secciones.forEach(seccion => {
+        const requiereVideoSeccion = seccion.requiereVideo !== false;
         const lecciones = Array.isArray(seccion.lecciones) ? seccion.lecciones : [];
         lecciones.forEach(leccion => {
           if (!leccion) return;
@@ -477,7 +478,19 @@ async function seedDatabase() {
           if (!leccion.urlVideo || typeof leccion.urlVideo !== 'string' || leccion.urlVideo.trim().length === 0) {
             leccion.urlVideo = obtenerVideoDemostrativo(contador++);
           }
+          if (leccion.requiereVideo === undefined) {
+            leccion.requiereVideo = requiereVideoSeccion;
+          }
         });
+      });
+    };
+
+    const asignarRequiereVideoASecciones = (curso) => {
+      const secciones = Array.isArray(curso.secciones) ? curso.secciones : [];
+      secciones.forEach((seccion) => {
+        if (seccion.requiereVideo === undefined) {
+          seccion.requiereVideo = Math.random() < 0.8;
+        }
       });
     };
 
@@ -632,6 +645,7 @@ async function seedDatabase() {
       // Agregar contenido a todas las lecciones
       agregarContenidoALecciones(cursoData);
       asegurarVideosEnLecciones(cursoData);
+      asignarRequiereVideoASecciones(cursoData);
       
       const curso = await Curso.create(cursoData);
       console.log(`✅ Curso creado: ${curso.titulo}`);
@@ -716,7 +730,7 @@ async function seedDatabase() {
         password: '123456',
         nombre: 'Admin',
         apellido: 'Sistema',
-        rol: 'admin'
+        rol: 'admin_dae'
       }
     ];
 

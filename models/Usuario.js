@@ -31,7 +31,7 @@ const UsuarioSchema = new mongoose.Schema({
   direccion: String,
   rol: {
     type: String,
-    enum: ['estudiante', 'profesor', 'admin'],
+    enum: ['estudiante', 'profesor', 'admin_dae'],
     default: 'estudiante'
   },
   cursosInscritos: {

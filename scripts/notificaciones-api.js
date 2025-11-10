@@ -118,7 +118,7 @@ async function cargarNotificaciones() {
   const data = await obtenerNotificaciones();
   const list = document.getElementById("notif-list");
   const countEl = document.getElementById("notif-count");
-
+  
   if (!list || !countEl) return;
 
   list.innerHTML = "";
@@ -146,10 +146,10 @@ async function cargarNotificaciones() {
     const mensaje = n.mensaje || n.descripcion || '';
     li.innerHTML = `
       <div class="d-flex justify-content-between align-items-start gap-3">
-        <div>
+      <div>
           <b>${titulo}</b><br>
           <span class="text-muted">${mensaje}</span><br>
-          <small class="text-muted">${fecha}</small>
+        <small class="text-muted">${fecha}</small>
         </div>
         <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" data-action="marcar" data-id="${id}">
           Marcar como vista
@@ -196,7 +196,7 @@ async function cargarNotificaciones() {
         }
       });
     }
-
+    
     list.appendChild(li);
   });
 

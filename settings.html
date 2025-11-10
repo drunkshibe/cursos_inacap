@@ -23,16 +23,14 @@
             
             <main class="flex-grow-1 p-4 p-lg-5 overflow-auto">
                 <h2 class="display-6 fw-bold mb-4">Configuración</h2>
-                <div class="bg-white p-4 p-lg-5 rounded shadow-sm">
-                    <div class="mb-4">
-                        <h3 class="h5 fw-semibold mb-2">Gestor de videos</h3>
-                        <p class="text-secondary small mb-0">
-                            Los usuarios administradores pueden subir o reemplazar videos de cada módulo. 
-                            Cada lección debe contar con un archivo de video (formato MP4, WebM, OGG o MOV) accesible para los estudiantes inscritos.
-                        </p>
-                    </div>
-                    <div id="admin-video-feedback" class="alert alert-warning d-none small"></div>
-                    <div id="admin-video-manager" class="accordion" aria-live="polite"></div>
+                <div class="bg-white p-5 rounded shadow-sm text-center">
+                    <h3 class="h5 fw-semibold mb-3">Configuración en desarrollo</h3>
+                    <p class="text-secondary mb-4">
+                        Estamos trabajando en un centro de control para personalización avanzada de la plataforma.
+                        Mientras tanto, utiliza las secciones de Administración DAE para gestionar cursos, contenidos y usuarios.
+                    </p>
+                    <a href="admin-cursos.html" class="btn btn-outline-primary btn-sm me-2">Ir a Administración DAE</a>
+                    <a href="index.html" class="btn btn-light btn-sm">Volver al inicio</a>
                 </div>
             </main>
         </div>
@@ -45,6 +43,5 @@
     <script src="scripts/auth.js"></script>
     <script src="scripts/notificaciones-api.js"></script>
     <script src="scripts/app.js"></script>
-    <script src="scripts/admin-media.js"></script>
 </body>
 </html>

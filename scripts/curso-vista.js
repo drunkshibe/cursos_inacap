@@ -103,6 +103,14 @@ function obtenerProgresoLeccionActual() {
   ) || null;
 }
 
+function leccionRequiereVideo(leccion, seccion) {
+  if (!leccion || leccion.tipo !== 'video' || !leccion.urlVideo) return false;
+  if (leccion.requiereVideo === undefined || leccion.requiereVideo === null) {
+    return seccion?.requiereVideo !== false;
+  }
+  return leccion.requiereVideo !== false;
+}
+
 async function recargarInscripcionActual() {
   if (!cursoActual) return;
   const cursoId = cursoActual._id || cursoActual.id;
@@ -615,7 +623,7 @@ function actualizarNavegacion() {
     const progreso = obtenerProgresoLeccionActual();
     const completada = progreso && progreso.completado;
     const videoVisto = progreso && progreso.videoCompletado;
-    const requiereVideo = leccionActual?.tipo === 'video';
+    const requiereVideo = leccionRequiereVideo(leccionActual, seccionEnCurso);
     const esUltimaLeccionSeccion = leccionesEnCurso.length > 0 && indiceLeccionActual >= leccionesEnCurso.length - 1;
     const requiereControlParaAvanzar = esUltimaLeccionSeccion && indiceSeccionActual < secciones.length - 1;
     const seccionIdActual = seccionEnCurso?._id ? seccionEnCurso._id.toString() : null;
@@ -648,7 +656,7 @@ function actualizarNavegacion() {
     const progreso = obtenerProgresoLeccionActual();
     const completada = progreso && progreso.completado;
     const videoVisto = progreso && progreso.videoCompletado;
-    const requiereVideo = leccionActual?.tipo === 'video';
+    const requiereVideo = leccionRequiereVideo(leccionActual, seccionEnCurso);
 
     btnMarcar.innerHTML = completada 
       ? '<i class="bi bi-check-circle-fill"></i> Completada'
@@ -690,7 +698,7 @@ async function marcarLeccionCompletada(completado) {
   try {
     const cursoId = cursoActual._id || cursoActual.id;
     const progreso = obtenerProgresoLeccionActual();
-    const requiereVideo = leccionActual?.tipo === 'video';
+    const requiereVideo = leccionRequiereVideo(leccionActual, seccionEnCurso);
 
     if (completado && requiereVideo) {
       if (!progreso || !progreso.videoCompletado) {

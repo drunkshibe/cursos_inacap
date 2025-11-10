@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Administración de Cursos - INACAP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .card { border-radius: 1rem; }
+        .table thead th { font-weight: 600; }
+        .estado-badge { font-size: 0.75rem; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="d-flex vh-100">
+        <div id="sidebar"></div>
+        <div class="flex-grow-1 d-flex flex-column">
+            <div id="header"></div>
+            <main class="flex-grow-1 p-4 p-lg-5 overflow-auto">
+                <div class="container-fluid px-0">
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between mb-4 gap-3">
+                        <div>
+                            <h1 class="h3 fw-bold mb-1">Administración de Cursos</h1>
+                            <p class="text-secondary mb-0">Crea, actualiza y controla la oferta académica disponible para los estudiantes.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button id="btn-recargar-cursos" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-repeat me-1"></i> Recargar
+                            </button>
+                            <button id="btn-nuevo-curso" class="btn btn-primary btn-sm">
+                                <i class="bi bi-plus-lg me-1"></i> Nuevo curso
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="admin-cursos-alert" class="alert d-none" role="alert"></div>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-xl-4">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h2 class="h5 fw-semibold mb-3" id="form-curso-titulo">Crear curso</h2>
+                                    <form id="form-curso" class="needs-validation" novalidate>
+                                        <input type="hidden" name="cursoId" id="curso-id" />
+                                        <div class="mb-3">
+                                            <label for="curso-titulo" class="form-label">Título *</label>
+                                            <input type="text" class="form-control" id="curso-titulo" name="titulo" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="curso-descripcion" class="form-label">Descripción *</label>
+                                            <textarea class="form-control" id="curso-descripcion" name="descripcion" rows="4" required></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="curso-categoria" class="form-label">Categoría</label>
+                                            <input type="text" class="form-control" id="curso-categoria" name="categoria" placeholder="Ej: Ciberseguridad">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="curso-nivel" class="form-label">Nivel</label>
+                                                <select class="form-select" id="curso-nivel" name="nivel">
+                                                    <option value="Principiante">Principiante</option>
+                                                    <option value="Intermedio" selected>Intermedio</option>
+                                                    <option value="Avanzado">Avanzado</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="curso-idioma" class="form-label">Idioma</label>
+                                                <input type="text" class="form-control" id="curso-idioma" name="idioma" value="Español">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="curso-duracion" class="form-label">Duración (horas)</label>
+                                                <input type="number" min="0" step="0.5" class="form-control" id="curso-duracion" name="duracionTotal">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="curso-precio" class="form-label">Precio</label>
+                                                <input type="number" min="0" step="0.01" class="form-control" id="curso-precio" name="precio" value="0">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="curso-fecha-publicacion" class="form-label">Fecha de publicación</label>
+                                                <input type="date" class="form-control" id="curso-fecha-publicacion" name="fechaPublicacion">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="curso-fecha-cierre" class="form-label">Fecha de cierre</label>
+                                                <input type="date" class="form-control" id="curso-fecha-cierre" name="fechaCierre">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="curso-activo" name="activo" checked>
+                                                <label class="form-check-label" for="curso-activo">Curso activo</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="curso-profesor-nombre" class="form-label">Profesor responsable</label>
+                                            <input type="text" class="form-control" id="curso-profesor-nombre" name="profesorNombre" placeholder="Nombre del instructor">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="curso-profesor-descripcion" class="form-label">Descripción del profesor</label>
+                                            <textarea class="form-control" id="curso-profesor-descripcion" name="profesorDescripcion" rows="2"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="curso-imagen" class="form-label">Imagen destacada</label>
+                                            <input type="file" class="form-control" id="curso-imagen" name="imagen" accept="image/*">
+                                            <div class="form-text">Formatos admitidos: JPG, PNG, GIF, WebP.</div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary flex-grow-1" id="btn-guardar-curso">
+                                                <i class="bi bi-save me-1"></i> Guardar curso
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary d-none" id="btn-cancelar-edicion">
+                                                Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-8">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h2 class="h5 fw-semibold mb-0">Cursos registrados</h2>
+                                        <span id="contador-cursos" class="text-secondary small"></span>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Título</th>
+                                                    <th class="text-nowrap">Estado</th>
+                                                    <th>Publicación</th>
+                                                    <th class="text-center">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabla-cursos-body">
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-secondary py-4">
+                                                        Cargando cursos...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4 d-none" id="panel-secciones">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between mb-3 gap-2">
+                                    <div>
+                                        <h2 class="h5 fw-semibold mb-1" id="panel-secciones-curso">Secciones del curso</h2>
+                                        <p class="text-secondary small mb-0" id="panel-secciones-resumen"></p>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-cerrar-panel-secciones">
+                                        <i class="bi bi-x-lg me-1"></i> Cerrar
+                                    </button>
+                                </div>
+
+                                <div id="panel-secciones-alert" class="alert d-none" role="alert"></div>
+
+                                <div class="row g-4">
+                                    <div class="col-12 col-xl-4">
+                                        <div class="border rounded h-100 p-3">
+                                            <h3 class="h6 fw-semibold mb-3" id="form-seccion-titulo">Nueva sección</h3>
+                                            <form id="form-seccion" novalidate>
+                                                <input type="hidden" id="seccion-id" name="seccionId">
+                                                <div class="mb-3">
+                                                    <label for="seccion-titulo" class="form-label">Título *</label>
+                                                    <input type="text" class="form-control" id="seccion-titulo" name="titulo" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="seccion-descripcion" class="form-label">Descripción</label>
+                                                    <textarea class="form-control" id="seccion-descripcion" name="descripcion" rows="3"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="seccion-orden" class="form-label">Orden</label>
+                                                    <input type="number" min="1" class="form-control" id="seccion-orden" name="orden" placeholder="1">
+                                                </div>
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="seccion-requiere-video" name="requiereVideo" checked>
+                                                    <label class="form-check-label small" for="seccion-requiere-video">
+                                                        Cada lección de esta sección requiere video
+                                                    </label>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-outline-primary flex-grow-1" id="btn-guardar-seccion">
+                                                        Guardar sección
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary d-none" id="btn-cancelar-seccion">
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-8">
+                                        <div class="border rounded h-100 p-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h3 class="h6 fw-semibold mb-0">Listado de secciones</h3>
+                                                <span class="text-secondary small" id="panel-secciones-conteo"></span>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm align-middle">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Título</th>
+                                                            <th class="text-nowrap">Orden</th>
+                                                            <th class="text-nowrap">Video</th>
+                                                            <th class="text-center">Lecciones</th>
+                                                            <th class="text-center">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tabla-secciones-body">
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-secondary py-4">
+                                                                Selecciona un curso para gestionar sus secciones.
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                            <div id="panel-lecciones" class="d-none">
+                                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between mb-3 gap-2">
+                                    <div>
+                                        <h3 class="h6 fw-semibold mb-1">Lecciones de la sección</h3>
+                                        <p class="text-secondary small mb-0" id="descripcion-seccion-seleccionada">Selecciona una sección para gestionar sus lecciones.</p>
+                                    </div>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <label class="text-secondary small mb-0" for="selector-leccion-seccion">Sección:</label>
+                                        <select id="selector-leccion-seccion" class="form-select form-select-sm" style="min-width: 220px;"></select>
+                                    </div>
+                                </div>
+                                <div id="panel-lecciones-alert" class="alert alert-warning d-none small" role="alert"></div>
+                                <div class="row g-4">
+                                    <div class="col-12 col-xl-4">
+                                        <div class="border rounded h-100 p-3">
+                                            <h4 class="h6 fw-semibold mb-3" id="form-leccion-titulo">Nueva lección</h4>
+                                            <form id="form-leccion" enctype="multipart/form-data" novalidate>
+                                                <input type="hidden" name="leccionId" id="leccion-id">
+                                                <div class="mb-3">
+                                                    <label for="leccion-titulo" class="form-label">Título *</label>
+                                                    <input type="text" class="form-control" id="leccion-titulo" name="titulo" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="leccion-descripcion" class="form-label">Descripción</label>
+                                                    <textarea class="form-control" id="leccion-descripcion" name="descripcion" rows="3"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="leccion-contenido" class="form-label">Contenido (HTML / Markdown)</label>
+                                                    <textarea class="form-control" id="leccion-contenido" name="contenido" rows="4"></textarea>
+                                                    <div class="form-text">Puedes incluir texto enriquecido, enlaces e instrucciones completas.</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6 mb-3">
+                                                        <label for="leccion-orden" class="form-label">Orden</label>
+                                                        <input type="number" min="1" class="form-control" id="leccion-orden" name="orden" placeholder="1">
+                                                    </div>
+                                                    <div class="col-6 mb-3">
+                                                        <label class="form-label">Requiere video</label>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox" id="leccion-requiere-video" name="requiereVideo">
+                                                            <label class="form-check-label small" for="leccion-requiere-video">El estudiante debe ver el video</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="leccion-video" class="form-label">Video</label>
+                                                    <input type="file" class="form-control" id="leccion-video" name="video" accept="video/mp4,video/webm,video/ogg,video/quicktime">
+                                                    <div class="form-text">Obligatorio si se requiere video y no existe uno cargado.</div>
+                                                </div>
+                                                <div class="form-check form-switch mb-3 d-none" id="wrapper-eliminar-video">
+                                                    <input class="form-check-input" type="checkbox" id="leccion-eliminar-video">
+                                                    <label class="form-check-label small" for="leccion-eliminar-video">Eliminar video actual</label>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="leccion-material" class="form-label">Material descargable</label>
+                                                    <input type="file" class="form-control" id="leccion-material" name="material" accept=".pdf,.ppt,.pptx">
+                                                </div>
+                                                <div class="form-check form-switch mb-3 d-none" id="wrapper-eliminar-material">
+                                                    <input class="form-check-input" type="checkbox" id="leccion-eliminar-material">
+                                                    <label class="form-check-label small" for="leccion-eliminar-material">Eliminar material actual</label>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-outline-primary flex-grow-1" id="btn-guardar-leccion">
+                                                        Guardar lección
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary d-none" id="btn-cancelar-leccion">
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-xl-8">
+                                        <div class="border rounded h-100 p-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h4 class="h6 fw-semibold mb-0">Lecciones registradas</h4>
+                                                <span class="text-secondary small" id="panel-lecciones-conteo"></span>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm align-middle">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Título</th>
+                                                            <th class="text-nowrap">Orden</th>
+                                                            <th class="text-nowrap">Video</th>
+                                                            <th class="text-nowrap">Requiere video</th>
+                                                            <th class="text-center">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tabla-lecciones-body">
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-secondary py-4">Selecciona una sección para ver sus lecciones.</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/include.js"></script>
+    <script src="scripts/api.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/notificaciones-api.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/admin-cursos-page.js"></script>
+</body>
+</html>
+

@@ -85,9 +85,9 @@ async function agregarSeccion(cursoId, seccionData) {
 }
 
 // Función para agregar una lección a una sección
-async function agregarLeccion(cursoId, seccionId, leccionData, videoFile, audioFile) {
+async function agregarLeccion(cursoId, seccionId, leccionData, videoFile, audioFile, materialFile) {
   try {
-    const curso = await window.cursosAPI.addLeccion(cursoId, seccionId, leccionData, videoFile, audioFile);
+    const curso = await window.cursosAPI.addLeccion(cursoId, seccionId, leccionData, videoFile, audioFile, materialFile);
     return curso;
   } catch (error) {
     console.error('Error al agregar lección:', error);

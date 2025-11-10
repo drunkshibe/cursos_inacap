@@ -9,8 +9,9 @@ const videosDir = path.join(uploadsDir, 'videos');
 const audiosDir = path.join(uploadsDir, 'audios');
 const imagesDir = path.join(uploadsDir, 'images');
 const diplomasDir = path.join(uploadsDir, 'diplomas');
+const materialsDir = path.join(uploadsDir, 'materiales');
 
-[uploadsDir, videosDir, audiosDir, imagesDir, diplomasDir].forEach(dir => {
+[uploadsDir, videosDir, audiosDir, imagesDir, diplomasDir, materialsDir].forEach(dir => {
   fs.ensureDirSync(dir);
 });
 
@@ -23,6 +24,8 @@ const storage = multer.diskStorage({
       cb(null, audiosDir);
   } else if (file.fieldname === 'imagen' || file.fieldname === 'fotoPerfil') {
       cb(null, imagesDir);
+    } else if (file.fieldname === 'material') {
+      cb(null, materialsDir);
     } else {
       cb(null, uploadsDir);
     }
@@ -41,6 +44,16 @@ const fileFilter = (req, file, cb) => {
   const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
   const allowedAudioTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/webm'];
   const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedDocumentTypes = [
+    'application/pdf',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.presentationml.template',
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+    'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
+    'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
+    'application/vnd.ms-powerpoint.template.macroEnabled.12'
+  ];
 
   if (file.fieldname === 'video') {
     if (allowedVideoTypes.includes(file.mimetype)) {
@@ -59,6 +72,12 @@ const fileFilter = (req, file, cb) => {
       cb(null, true);
     } else {
       cb(new Error('Tipo de imagen no permitido. Solo: JPG, PNG, GIF, WebP'), false);
+    }
+  } else if (file.fieldname === 'material') {
+    if (allowedDocumentTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de archivo no permitido. Solo PDF y presentaciones (PPT, PPTX)'), false);
     }
   } else {
     cb(null, true);
@@ -81,7 +100,8 @@ const uploadImage = upload.single('imagen');
 const uploadMultiple = upload.fields([
   { name: 'video', maxCount: 1 },
   { name: 'audio', maxCount: 1 },
-  { name: 'imagen', maxCount: 1 }
+  { name: 'imagen', maxCount: 1 },
+  { name: 'material', maxCount: 1 }
 ]);
 
 module.exports = {
@@ -94,6 +114,7 @@ module.exports = {
   audiosDir,
   imagesDir,
   uploadsDir,
-  diplomasDir
+  diplomasDir,
+  materialsDir
 };
 

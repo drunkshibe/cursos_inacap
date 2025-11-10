@@ -35,9 +35,10 @@ async function apiRequest(endpoint, options = {}) {
 // API de Cursos
 const cursosAPI = {
   // Obtener todos los cursos
-  async getAll() {
+  async getAll(opciones = {}) {
     try {
-      const response = await fetch(`${API_BASE_URL}/cursos`, {
+      const query = opciones.includeTodos ? '?todos=1' : '';
+      const response = await fetch(`${API_BASE_URL}/cursos${query}`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -171,7 +172,7 @@ const cursosAPI = {
   },
 
   // Agregar lección a una sección
-  async addLeccion(cursoId, seccionId, leccionData, videoFile = null, audioFile = null) {
+  async addLeccion(cursoId, seccionId, leccionData, videoFile = null, audioFile = null, materialFile = null) {
     const formData = new FormData();
     
     Object.keys(leccionData).forEach(key => {
@@ -186,6 +187,10 @@ const cursosAPI = {
 
     if (audioFile) {
       formData.append('audio', audioFile);
+    }
+
+    if (materialFile) {
+      formData.append('material', materialFile);
     }
 
     try {
@@ -208,7 +213,7 @@ const cursosAPI = {
   },
 
   // Actualizar lección
-  async updateLeccion(cursoId, seccionId, leccionId, leccionData, videoFile = null, audioFile = null) {
+  async updateLeccion(cursoId, seccionId, leccionId, leccionData, videoFile = null, audioFile = null, materialFile = null) {
     const formData = new FormData();
     
     Object.keys(leccionData).forEach(key => {
@@ -223,6 +228,10 @@ const cursosAPI = {
 
     if (audioFile) {
       formData.append('audio', audioFile);
+    }
+
+    if (materialFile) {
+      formData.append('material', materialFile);
     }
 
     try {
@@ -250,8 +259,62 @@ const cursosAPI = {
       method: 'DELETE',
     });
   },
+
+  // Gestionar exámenes
+  async addExam(cursoId, examenData) {
+    return await apiRequest(`/cursos/${cursoId}/examenes`, {
+      method: 'POST',
+      body: JSON.stringify(examenData),
+    });
+  },
+
+  async updateExam(cursoId, examenId, examenData) {
+    return await apiRequest(`/cursos/${cursoId}/examenes/${examenId}`, {
+      method: 'PUT',
+      body: JSON.stringify(examenData),
+    });
+  },
+
+  async deleteExam(cursoId, examenId) {
+    return await apiRequest(`/cursos/${cursoId}/examenes/${examenId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Exportar para uso global
 window.cursosAPI = cursosAPI;
+
+// API de Usuarios (Administración DAE)
+const usuariosAPI = {
+  async getAll() {
+    const data = await apiRequest('/usuarios');
+    return data.usuarios || [];
+  },
+
+  async create(usuarioData) {
+    const data = await apiRequest('/usuarios', {
+      method: 'POST',
+      body: JSON.stringify(usuarioData),
+    });
+    return data.usuario;
+  },
+
+  async update(id, usuarioData) {
+    const data = await apiRequest(`/usuarios/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(usuarioData),
+    });
+    return data.usuario;
+  },
+
+  async deactivate(id) {
+    const data = await apiRequest(`/usuarios/${id}`, {
+      method: 'DELETE',
+    });
+    return data.usuario;
+  }
+};
+
+window.usuariosAPI = usuariosAPI;
 

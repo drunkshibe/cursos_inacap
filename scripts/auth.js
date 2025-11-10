@@ -160,6 +160,11 @@ function actualizarUIUsuario() {
     if (fotoPerfil) {
       fotoPerfil.src = 'Pictures/profile.png';
     }
+
+    const adminMenu = document.getElementById('admin-dae-menu');
+    if (adminMenu) {
+      adminMenu.classList.add('d-none');
+    }
     return;
   }
 
@@ -173,6 +178,15 @@ function actualizarUIUsuario() {
   const fotoPerfil = document.getElementById('foto-perfil');
   if (fotoPerfil) {
     fotoPerfil.src = usuarioActual.fotoPerfil || 'Pictures/profile.png';
+  }
+
+  const adminMenu = document.getElementById('admin-dae-menu');
+  if (adminMenu) {
+    if (usuarioActual.rol === 'admin_dae') {
+      adminMenu.classList.remove('d-none');
+    } else {
+      adminMenu.classList.add('d-none');
+    }
   }
 }
 

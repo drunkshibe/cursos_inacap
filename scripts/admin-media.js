@@ -29,8 +29,8 @@
         return;
       }
 
-      if (usuario.rol !== 'admin') {
-        renderAccessMessage('Solo los usuarios con rol administrador pueden gestionar los videos.', 'warning');
+      if (usuario.rol !== 'admin_dae') {
+        renderAccessMessage('Solo el Administrador DAE puede gestionar los videos de los cursos.', 'warning');
         return;
       }
 
@@ -54,7 +54,7 @@
     }
 
     try {
-      cursos = await window.cursosAPI.getAll();
+      cursos = await window.cursosAPI.getAll({ includeTodos: true });
       renderCursos();
     } catch (error) {
       console.error('Error al obtener cursos:', error);
@@ -235,6 +235,7 @@
           leccion._id,
           payload,
           archivo,
+          null,
           null
         );
 

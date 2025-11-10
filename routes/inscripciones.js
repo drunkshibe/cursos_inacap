@@ -94,12 +94,18 @@ router.put('/:cursoId/reiniciar', requireAuth, async (req, res) => {
     const progresoPorLeccion = [];
     if (Array.isArray(curso.secciones)) {
       curso.secciones.forEach((seccion) => {
+        const requiereVideoSeccion = seccion.requiereVideo !== false;
         if (Array.isArray(seccion.lecciones)) {
           seccion.lecciones.forEach((leccion) => {
             const leccionId = leccion?._id || new mongoose.Types.ObjectId();
+            const tieneVideo = Boolean(leccion?.urlVideo);
+            const requiereVideoLeccion = leccion?.requiereVideo === undefined
+              ? requiereVideoSeccion
+              : leccion.requiereVideo !== false;
+            const requiereVideo = requiereVideoLeccion && tieneVideo && leccion?.tipo === 'video';
             progresoPorLeccion.push({
               leccionId,
-              videoCompletado: false,
+              videoCompletado: !requiereVideo,
               completado: false,
               progreso: 0,
               fechaCompletado: null
@@ -220,13 +226,19 @@ router.post('/:cursoId', requireAuth, async (req, res) => {
     // Inicializar progreso de lecciones
     if (curso.secciones && curso.secciones.length > 0) {
       curso.secciones.forEach(seccion => {
+        const requiereVideoSeccion = seccion.requiereVideo !== false;
         if (seccion.lecciones && seccion.lecciones.length > 0) {
           seccion.lecciones.forEach(leccion => {
             // Usar el _id de la lección si existe, sino usar un identificador temporal
             const leccionId = leccion._id || leccion.id || new mongoose.Types.ObjectId();
+            const tieneVideo = Boolean(leccion?.urlVideo);
+            const requiereVideoLeccion = leccion?.requiereVideo === undefined
+              ? requiereVideoSeccion
+              : leccion.requiereVideo !== false;
+            const requiereVideo = requiereVideoLeccion && tieneVideo && leccion?.tipo === 'video';
             inscripcion.progresoLecciones.push({
               leccionId: leccionId,
-            videoCompletado: false,
+              videoCompletado: !requiereVideo,
               completado: false,
               progreso: 0
             });
@@ -423,6 +435,16 @@ router.put('/:cursoId/progreso/:leccionId', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'La lección no pertenece a este curso' });
     }
 
+    const leccionCurso = seccionActual.lecciones.find(lec => lec?._id && lec._id.toString() === leccionId) || null;
+    const requiereVideoLeccion = Boolean(
+      leccionCurso &&
+      leccionCurso.tipo === 'video' &&
+      leccionCurso.urlVideo &&
+      (leccionCurso.requiereVideo === undefined
+        ? seccionActual.requiereVideo !== false
+        : leccionCurso.requiereVideo !== false)
+    );
+
     if (indiceSeccionActual > 0) {
       const seccionAnterior = seccionesOrdenadas[indiceSeccionActual - 1];
       if (seccionAnterior?.tieneExamen) {
@@ -452,15 +474,13 @@ router.put('/:cursoId/progreso/:leccionId', requireAuth, async (req, res) => {
       p => p.leccionId.toString() === leccionId
     );
 
-    const marcandoVideo = videoCompletado === true;
-
     if (leccionProgreso) {
       if (videoCompletado !== undefined) {
         leccionProgreso.videoCompletado = Boolean(videoCompletado);
       }
 
       if (completado !== undefined && completado) {
-        if (!(leccionProgreso.videoCompletado || marcandoVideo)) {
+        if (requiereVideoLeccion && !leccionProgreso.videoCompletado) {
           return res.status(400).json({ error: 'Debes visualizar el video completo antes de marcar la lección como completada.' });
         }
       }
@@ -469,13 +489,13 @@ router.put('/:cursoId/progreso/:leccionId', requireAuth, async (req, res) => {
       if (progreso !== undefined) leccionProgreso.progreso = progreso;
       if (completado) leccionProgreso.fechaCompletado = new Date();
     } else {
-      if (completado && !marcandoVideo) {
+      if (completado && requiereVideoLeccion && !videoCompletado) {
         return res.status(400).json({ error: 'Debes visualizar el video completo antes de marcar la lección como completada.' });
       }
 
       inscripcion.progresoLecciones.push({
         leccionId,
-        videoCompletado: Boolean(videoCompletado),
+        videoCompletado: requiereVideoLeccion ? Boolean(videoCompletado) : true,
         completado: completado || false,
         progreso: progreso || 0,
         fechaCompletado: completado ? new Date() : null
